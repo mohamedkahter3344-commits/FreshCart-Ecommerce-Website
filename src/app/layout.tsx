@@ -7,6 +7,9 @@ import Navbar from "./_components/Navbar/Navbar";
 import AOSProvider from "./_components/AosProvider/AosProvider";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toast";
+import Providers from './../Providers/Providers';
+
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,12 +23,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <AOSProvider />
-        <Suspense fallback={<div className="h-16" />}>
-          <Navbar />
-        </Suspense>
-        <Toaster />
-        {children}
+        <Providers>
+          <AOSProvider />
+          <Suspense fallback={<div className="h-16" />}>
+            <Navbar />
+          </Suspense>
+          <Toaster />
+          {children}
+        </Providers>
       </body>
     </html>
   );

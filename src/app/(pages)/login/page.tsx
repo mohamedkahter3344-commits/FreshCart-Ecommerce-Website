@@ -14,11 +14,11 @@ const Login = () => {
     defaultValues: {
       email: "",
       password: "",
-    },
+    },   
     resolver: zodResolver(loginSchema),
   });
 
-  async function signInMain(values: LoginTypeSchema) {
+  async function signInMain(values: LoginTypeSchema){
     const success = await signIn(values);
 
     if (success) {

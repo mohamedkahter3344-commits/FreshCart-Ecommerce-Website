@@ -7,11 +7,11 @@ import { TfiAlignJustify } from "react-icons/tfi";
 import { TfiClose } from "react-icons/tfi";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-// import { Button } from "@/components/ui/button";
-
-
+import { signOut, useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
+  const { status } = useSession();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,55 +37,77 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden items-center gap-2 lg:flex">
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                    link.href === pathname
-                      ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
-                      : "text-gray-600 hover:bg-green-50 hover:text-green-600"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+
+          {status === "authenticated" ? (
+            <ul className="hidden items-center gap-2 lg:flex">
+              {links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+                      link.href === pathname
+                        ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
+                        : "text-gray-600 hover:bg-green-50 hover:text-green-600"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            ""
+          )}
         </div>
-
-
 
         {/* Right Side */}
         <div className="flex shrink-0 items-center gap-3">
           {/* Add Login / Register / Icons here */}
 
           <div>
-            <ul className="flex gap-3 items-center">
-              <li>
-                <Link className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                     pathname === "/login"
-                      ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
-                      : "text-gray-600 hover:bg-green-50 hover:text-green-600"
-                  }`} href="/login">
-                Login
-                </Link>
-              </li>
-              <li>
-                <Link  className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                    pathname === "/register"
-                      ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
-                      : "text-gray-600 hover:bg-green-50 hover:text-green-600"
-                  }`} href="/register">
-                Register
-                </Link>
-              </li>
-              <li>
-                {/* <Button>Log Out</Button> */}
-              </li>
-            </ul>
+            {status === "unauthenticated" ? (
+              <ul className="flex gap-3 items-center">
+                <li>
+                  <Link
+                    className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+                      pathname === "/login"
+                        ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
+                        : "text-gray-600 hover:bg-green-50 hover:text-green-600"
+                    }`}
+                    href="/login"
+                  >
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className={`rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+                      pathname === "/register"
+                        ? "bg-green-50 font-semibold text-green-600 hover:bg-green-100"
+                        : "text-gray-600 hover:bg-green-50 hover:text-green-600"
+                    }`}
+                    href="/register"
+                  >
+                    Register
+                  </Link>
+                </li>
+              </ul>
+            ) : (
+              ""
+            )}
           </div>
+
+          {status === "authenticated" && (
+            <Button
+              onClick={() =>
+                signOut({
+                  callbackUrl: "/login",
+                })
+              }
+            >
+              Log Out
+            </Button>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -95,13 +117,7 @@ const Navbar = () => {
             aria-expanded={isOpen}
             className="rounded-lg p-2 text-gray-700 transition hover:bg-green-50 hover:text-green-600 lg:hidden"
           >
-            {isOpen ? (
-             <TfiClose />
-
-            ) : (
-              <TfiAlignJustify />
-
-            )}
+            {isOpen ? <TfiClose /> : <TfiAlignJustify />}
           </button>
         </div>
       </div>
