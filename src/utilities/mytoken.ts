@@ -1,3 +1,4 @@
+
 "use server";
 
 import { decode } from "next-auth/jwt";
@@ -6,27 +7,27 @@ import { cookies } from "next/headers";
 export async function getMyToken() {
   const cookieStore = await cookies();
 
-  const cookieName = cookieStore.has("__Secure-next-auth.session-token")
-    ? "__Secure-next-auth.session-token"
-    : "next-auth.session-token";
-
+  const cookieName = "__Secure-next-auth.session-token";
   const secretToken = cookieStore.get(cookieName)?.value;
 
   if (!secretToken) {
-    console.error("Session cookie not found");
+    console.error("NextAuth session cookie not found");
     return null;
   }
 
   try {
-    const token = await decode({
+    const decodedToken = await decode({
       token: secretToken,
       secret: process.env.NEXTAUTH_SECRET!,
       salt: cookieName,
     });
 
-    return token?.token ?? null;
-  } catch (error) {
-    console.error("Failed to decode session token:", error);
+    console.log("Session decoded:", Boolean(decodedToken));
+    console.log("API token exists:", Boolean(decodedToken?.token));
+
+    return decodedToken?.token ?? null;
+  } catch {
+    console.error("Could not decode NextAuth session");
     return null;
   }
 }
