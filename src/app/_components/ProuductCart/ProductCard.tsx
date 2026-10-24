@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { CiHeart, CiStar } from "react-icons/ci";
 import { FaShoppingCart } from "react-icons/fa";
+import ButtonCard from "../ButtonCard/ButtonCard";
 
 const ProductCard = ({ singleProduct }: { singleProduct: Product }) => {
   return (
@@ -74,10 +75,7 @@ const ProductCard = ({ singleProduct }: { singleProduct: Product }) => {
 
         {/* Actions */}
         <CardFooter className="px-5 py-5 ">
-          <Button className="h-11 w-full gap-2 rounded-xl bg-green-600 font-semibold text-white transition-colors hover:bg-green-700">
-            <FaShoppingCart className="size-4 text-white" />
-            <span className="text-white">Add to Cart</span>
-          </Button>
+        <ButtonCard id={singleProduct._id}/>
         </CardFooter>
       </Card>
     </>

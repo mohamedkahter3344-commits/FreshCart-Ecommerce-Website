@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Logo from "../../../assets/freshcart-logo.53f7a424c3aedc30a0fb46dc2278137c-_1_.png";
 import { TfiAlignJustify } from "react-icons/tfi";
 import { TfiClose } from "react-icons/tfi";
@@ -9,11 +9,13 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { cartContext } from "@/context/CartContext";
 
 const Navbar = () => {
   const { status } = useSession();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { numOfCarts } = useContext(cartContext);
 
   const links = [
     { name: "Home", href: "/" },
@@ -50,7 +52,8 @@ const Navbar = () => {
                         : "text-gray-600 hover:bg-green-50 hover:text-green-600"
                     }`}
                   >
-                    {link.name}
+                    {link.name === "Cart" ? `Cart (${numOfCarts})` : link.name}
+                    
                   </Link>
                 </li>
               ))}

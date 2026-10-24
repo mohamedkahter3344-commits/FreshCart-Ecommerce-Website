@@ -3,6 +3,7 @@ import { SingleProduct } from "@/interface/singleProduct.t";
 import { CiHeart, CiStar } from "react-icons/ci";
 import { FaShoppingCart, FaShieldAlt, FaTruck } from "react-icons/fa";
 import Image from "next/image";
+import ButtonCard from "@/app/_components/ButtonCard/ButtonCard";
 
 const ProductDetails = async ({
   params,
@@ -31,7 +32,7 @@ const ProductDetails = async ({
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
           <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
             {/* Product Image */}
-            <div className="relative flex min-h-87.5 items-center justify-center bg-green-50/70 p-6 sm:p-10 md:min-h-[560px] dark:bg-gray-800/50">
+            <div className="relative flex min-h-87.5 items-center justify-center bg-green-50/70 p-6 sm:p-10 md:min-h-140 dark:bg-gray-800/50">
               <span className="absolute left-5 top-5 rounded-full border border-green-200 bg-white px-4 py-2 text-xs font-semibold text-green-700 shadow-sm dark:border-green-800 dark:bg-gray-900 dark:text-green-400">
                 {singleProduct.category?.name ?? "General"}
               </span>
@@ -49,7 +50,7 @@ const ProductDetails = async ({
               height={500}
                 src={singleProduct.imageCover}
                 alt={singleProduct.title}
-                className="max-h-[450px] w-full object-contain transition-transform duration-500 hover:scale-105"
+                className="max-h-112.5 w-full object-contain transition-transform duration-500 hover:scale-105"
               />
             </div>
 
@@ -159,13 +160,7 @@ const ProductDetails = async ({
 
               {/* Actions */}
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-5 font-semibold text-white shadow-sm transition hover:bg-green-700 active:scale-[0.98]"
-                >
-                  <FaShoppingCart className="size-4" />
-                  Add to Cart
-                </button>
+               <ButtonCard id={singleProduct._id}/>
 
                 <button
                   type="button"
