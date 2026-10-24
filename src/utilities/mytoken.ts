@@ -1,15 +1,30 @@
-"use server"
+
+"use server";
 
 import { decode } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
 export async function getMyToken() {
-   const secretToken = (await cookies()).get("next-auth.session-token" || "__Secure-next-auth.session-token")?.value;
+  const cookieStore = await cookies();
 
-   const token = await decode({
-      token:secretToken,
-      secret:process.env.NEXTAUTH_SECRET!
-   })
+  const cookieName = "__Secure-next-auth.session-token";
+  const secretToken = cookieStore.get(cookieName)?.value;
 
-   return token?.token;
+  if (!secretToken) {
+    console.error("Session cookie not found");
+    return null;
+  }
+
+  try {
+    const token = await decode({
+      token: secretToken,
+      secret: process.env.NEXTAUTH_SECRET!,
+      salt: cookieName,
+    });
+
+    return token?.token ?? null;
+  } catch (error) {
+    console.error("Failed to decode session token");
+    return null;
+  }
 }
