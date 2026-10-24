@@ -7,11 +7,15 @@ import { cookies } from "next/headers";
 export async function getMyToken() {
   const cookieStore = await cookies();
 
-  const cookieName = "__Secure-next-auth.session-token";
+  const cookieName =
+    process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
+
   const secretToken = cookieStore.get(cookieName)?.value;
 
   if (!secretToken) {
-    console.error("Session cookie not found");
+    console.error(`Session cookie not found: ${cookieName}`);
     return null;
   }
 
@@ -23,8 +27,8 @@ export async function getMyToken() {
     });
 
     return token?.token ?? null;
-  } catch (error) {
-    console.error("Failed to decode session token");
+  } catch {
+    console.error("Failed to decode NextAuth session");
     return null;
   }
 }
