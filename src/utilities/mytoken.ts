@@ -4,7 +4,7 @@ import { decode } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
 export async function getMyToken() {
-   const secretToken = (await cookies()).get("next-auth.session-token" || "next-auth.session-token")?.value;
+   const secretToken = (await cookies()).get("next-auth.session-token" || "__Secure-next-auth.session-token")?.value;
 
    const token = await decode({
       token:secretToken,
