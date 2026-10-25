@@ -20,6 +20,4 @@ export async function getUserCartAction() {
 
 
     return data;
-
-
 }

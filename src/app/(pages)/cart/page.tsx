@@ -1,11 +1,10 @@
-
 "use client";
 
 import CartProductComp from "@/app/_components/CartProduct/CartProductComp";
 import { cartContext } from "@/context/CartContext";
 import { CartProduct } from "@/interface/userCart.t";
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { Oval } from "react-loader-spinner";
 import {
   FaShoppingCart,
@@ -31,7 +30,10 @@ const Cart = () => {
     clearAllProductCart,
     isLoading,
     isClearingCart,
+    applyCouponCart,
+    isApplyingCoupon,
   } = useContext(cartContext);
+  const couponText = useRef<HTMLInputElement>(null);
 
   const isCartEmpty = products.length === 0;
 
@@ -77,9 +79,7 @@ const Cart = () => {
             Home
           </Link>
           <span>/</span>
-          <span className="font-medium text-gray-700">
-            Shopping Cart
-          </span>
+          <span className="font-medium text-gray-700">Shopping Cart</span>
         </div>
 
         {/* Page Header */}
@@ -131,8 +131,8 @@ const Cart = () => {
               </h2>
 
               <p className="mt-4 max-w-md text-sm leading-7 text-gray-500 sm:text-base">
-                Looks like you haven&apos;t added anything yet. Discover
-                our latest products and find something you&apos;ll love.
+                Looks like you haven&apos;t added anything yet. Discover our
+                latest products and find something you&apos;ll love.
               </p>
 
               <Link
@@ -269,8 +269,8 @@ const Cart = () => {
                     </h2>
                   </div>
                   <p className="mt-2 text-sm text-green-100">
-                    {numOfCarts} {numOfCarts === 1 ? "item" : "items"} in
-                    your cart
+                    {numOfCarts} {numOfCarts === 1 ? "item" : "items"} in your
+                    cart
                   </p>
                 </div>
 
@@ -305,9 +305,7 @@ const Cart = () => {
 
                     <div className="flex items-center justify-between gap-3 text-sm sm:text-base">
                       <span className="text-gray-600">Discount</span>
-                      <span className="font-semibold text-gray-900">
-                        0 EGP
-                      </span>
+                      <span className="font-semibold text-gray-900">0 EGP</span>
                     </div>
                   </div>
 
@@ -325,20 +323,41 @@ const Cart = () => {
                   </div>
 
                   {/* Promo Code */}
-                  <div className="mb-4 flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-4 text-sm text-gray-500 sm:text-base">
+                  <div className="mb-4 flex items-center gap-2 rounded-xl border border-gray-200 p-3 sm:p-4">
                     <FaTag className="shrink-0 text-gray-500" />
-                    <span>Apply Promo Code</span>
+
+                    <input
+                      ref={couponText}
+                      type="text"
+                      placeholder="Enter promo code"
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 sm:text-base"
+                    />
+
+                    <button
+                      type="button"
+                      disabled={isApplyingCoupon}
+                      onClick={() => {
+                        const code = couponText.current?.value.trim();
+
+                        if (code) {
+                          applyCouponCart(code);
+                        }
+                      }}
+                      className="shrink-0 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
+                    >
+                      {isApplyingCoupon ? "Applying..." : "Apply"}
+                    </button>
                   </div>
 
                   {/* Checkout */}
-                  <button
+                  <Link
                     type="button"
-                    disabled
-                    className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-green-600 py-4 text-base font-bold text-white opacity-80 shadow-sm"
+                    href="/checkout"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-4 text-base font-bold text-white  shadow-sm"
                   >
                     <FaLock size={14} />
                     Secure Checkout
-                  </button>
+                  </Link>
 
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-xs text-gray-500 sm:text-sm">
                     <span className="flex items-center gap-2">

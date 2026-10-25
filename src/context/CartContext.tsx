@@ -2,12 +2,15 @@
 "use client";
 
 import { addProductToCartAction } from "@/CartAction/addProductCart";
+import { applyCouponToCartAction } from "@/CartAction/applyCouponToCart";
 import { clearAllCartAction } from "@/CartAction/clearProductsCart";
 import { getUserCartAction } from "@/CartAction/getUserCart";
 import { deleteProductCartAction } from "@/CartAction/removeCartItem";
 import { updateProductCartAction } from "@/CartAction/updateProductCart";
 import { toast } from "@/components/ui/toast";
 import { Cart, CartProduct } from "@/interface/userCart.t";
+import { createCashPaymentAction } from "@/OrderAction/createCashPayment";
+import { isAxiosError } from "axios";
 import React, {
   createContext,
   useCallback,
@@ -21,19 +24,29 @@ type CartContextType = {
   totalPriceCart: number;
   addProductCart: (args: { id: string }) => Promise<any>;
   deleteProductCart: (id: string) => Promise<any>;
+  applyCouponCart: (couponTitle: string) => Promise<any>;
   updateProductCart: (id: string, count: number) => Promise<any>;
+  createProductOrder: (id: string,
+  address: string,
+  phoneNumber: string,
+  cityPlace: string,
+  code: string,) => Promise<any>;
   getUserCart: () => Promise<void>;
   clearAllProductCart: () => Promise<any>;
   isLoading: boolean;
   isClearingCart: boolean;
+  isApplyingCoupon: boolean;
+  cartId: string;
 };
 
 export const cartContext = createContext<CartContextType>({
   products: [],
   numOfCarts: 0,
   totalPriceCart: 0,
+  cartId:"",
   isLoading: true,
   isClearingCart: false,
+  isApplyingCoupon: false,
 
   addProductCart: async () => ({
     status: "error",
@@ -52,6 +65,14 @@ export const cartContext = createContext<CartContextType>({
     status: "error",
     message: "Cart provider is unavailable",
   }),
+  applyCouponCart: async () => ({
+    status: "error",
+    message: "Cart provider is unavailable",
+  }),
+  createProductOrder: async () => ({
+    status: "error",
+    message: "Cart provider is unavailable",
+  }),
 });
 
 const CartContextProvider = ({
@@ -62,6 +83,7 @@ const CartContextProvider = ({
   const [products, setProducts] = useState<CartProduct[]>([]);
   const [numOfCarts, setNumOfCarts] = useState(0);
   const [totalPriceCart, setTotalPriceCart] = useState(0);
+  const [cartId, setCartId] = useState("");
 
   // Loading for fetching cart data
   const [isLoading, setIsLoading] = useState(true);
@@ -69,17 +91,32 @@ const CartContextProvider = ({
   // Separate loading state for Clear All
   const [isClearingCart, setIsClearingCart] = useState(false);
 
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
   const getUserCart = useCallback(async () => {
     setIsLoading(true);
 
     try {
       const cartData: Cart = await getUserCartAction();
-
+      setCartId(cartData?.cartId)
       setProducts(cartData?.data?.products ?? []);
       setNumOfCarts(cartData?.numOfCartItems ?? 0);
       setTotalPriceCart(cartData?.data?.totalCartPrice ?? 0);
     } catch (error) {
       console.error("Failed to get user cart:", error);
+       if (isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to load your cart."
+      );
+    }
+
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("Failed to load your cart.");
+      
     } finally {
       setIsLoading(false);
     }
@@ -158,6 +195,88 @@ const CartContextProvider = ({
         status: "error",
         message: "Failed to delete product cart",
       };
+    }
+  }
+  async function createProductOrder( id: string,
+  address: string,
+  phoneNumber: string,
+  cityPlace: string,
+  code: string,) {
+    
+
+    try {
+      const result = await createCashPaymentAction(id,address,phoneNumber,cityPlace,code);
+
+      if (result?.status !== "success") {
+        toast.add({
+          type: "error",
+          description: result?.message || "Failed to cash payment",
+        });
+
+        return result;
+      }
+
+      await getUserCart();
+
+      toast.add({
+        type: "success",
+        description: result?.message || "Cash Payment Successfully",
+      });
+
+      return result;
+    } catch (error) {
+
+      toast.add({
+        type: "error",
+        description: "Failed to Cash Payment",
+      });
+
+      return {
+        status: "error",
+        message: "Failed to Cash Payment",
+      };
+    }
+  }
+  // apply Coupon Code (Logic)
+  async function applyCouponCart(couponTitle: string) {
+    
+    setIsApplyingCoupon(true);
+    try {
+      const result = await applyCouponToCartAction(couponTitle);
+
+
+      setIsLoading(false);
+      if (result?.status !== "success") {
+        toast.add({
+          type: "error",
+          description: result?.message || "Failed to apply coupon",
+        });
+
+        return result;
+      }
+
+      await getUserCart();
+
+      toast.add({
+        type: "success",
+        description: result?.message || "Apply coupon Succssefully",
+      });
+
+      return result;
+    } catch (error) {
+      
+
+      toast.add({
+        type: "error",
+        description: "Failed to apply coupon",
+      });
+
+      return {
+        status: "error",
+        message: "Failed to apply coupon ",
+      };
+    } finally {
+      setIsApplyingCoupon(false);
     }
   }
 
@@ -269,6 +388,10 @@ const CartContextProvider = ({
         clearAllProductCart,
         isLoading,
         isClearingCart,
+        applyCouponCart,
+        isApplyingCoupon,
+        createProductOrder,
+        cartId
       }}
     >
       {children}
