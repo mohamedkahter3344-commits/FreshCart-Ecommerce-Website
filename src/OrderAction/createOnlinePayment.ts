@@ -1,6 +1,9 @@
+
 "use server";
+
 import { getMyToken } from "@/utilities/mytoken";
 import axios from "axios";
+
 export async function createOnlinePaymentAction(
   id: string,
   address: string,
@@ -11,13 +14,19 @@ export async function createOnlinePaymentAction(
 
   if (!token) {
     return {
-      status: "error",
+      status: "error" as const,
       message: "Please log in first",
     };
   }
 
+  const baseUrl = process.env.NEXTAUTH_URL;
+
+  if (!baseUrl) {
+    throw new Error("NEXTAUTH_URL is not configured");
+  }
+
   const { data } = await axios.post(
-    `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${id}?url=http://localhost:3000`,
+    `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${id}?url=${encodeURIComponent(baseUrl)}`,
     {
       shippingAddress: {
         details: address,
@@ -27,7 +36,7 @@ export async function createOnlinePaymentAction(
     },
     {
       headers: {
-        token: token as string,
+        token,
         "Content-Type": "application/json",
       },
     },
