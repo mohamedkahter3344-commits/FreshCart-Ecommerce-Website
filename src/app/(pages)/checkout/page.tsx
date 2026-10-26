@@ -62,8 +62,13 @@ function CheckoutContent({
 }) {
   const stepper = checkout.useStepper({ linear: true });
 
-  const { products, totalPriceCart, createProductOrder, cartId } =
-    useContext(cartContext);
+  const {
+    products,
+    totalPriceCart,
+    createProductOrder,
+    cartId,
+    createOnlineProductOrder,
+  } = useContext(cartContext);
 
   const [addresses, setAddresses] = useState<ShippingAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
@@ -223,7 +228,7 @@ function CheckoutContent({
     setAddressError("");
   }
 
-  // Submit cash order only after the user confirms.
+  // Submit order only after the user confirms.
   async function handleNext() {
     setAddressError("");
     setOrderError("");
@@ -279,13 +284,6 @@ function CheckoutContent({
         return;
       }
 
-      if (payment === "online") {
-        setOrderError(
-          "Online payment is not connected yet. Please select Cash on Delivery.",
-        );
-        return;
-      }
-
       if (!cartId) {
         setOrderError(
           "Cart ID is missing. Please refresh your cart and try again.",
@@ -296,6 +294,35 @@ function CheckoutContent({
       setIsPlacingOrder(true);
 
       try {
+        // ===== Online payment =====
+        if (payment === "online") {
+          const result = await createOnlineProductOrder(
+            cartId,
+            selectedAddress.details,
+            selectedAddress.phone,
+            selectedAddress.city,
+          );
+
+          if (result?.status !== "success") {
+            setOrderError(
+              result?.message || "Failed to start online payment.",
+            );
+            return;
+          }
+
+          // Stripe checkout URL (API usually returns it in session.url)
+          const paymentUrl = result?.session?.url ?? result?.url;
+
+          if (paymentUrl) {
+            window.location.href = paymentUrl;
+            return;
+          }
+
+          setOrderError("Payment link was not returned. Please try again.");
+          return;
+        }
+
+        // ===== Cash on delivery =====
         const result = await createProductOrder(
           cartId,
           selectedAddress.details,
@@ -325,7 +352,7 @@ function CheckoutContent({
           );
         }
       } catch (error) {
-        console.error("Create cash order failed:", error);
+        console.error("Place order failed:", error);
         setOrderError("Something went wrong while placing your order.");
       } finally {
         setIsPlacingOrder(false);
@@ -1217,13 +1244,6 @@ function CheckoutContent({
 
                           <FaCheckCircle className="shrink-0 text-xl text-emerald-500" />
                         </div>
-
-                        {payment === "online" && (
-                          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-800">
-                            Online payment is not connected yet. Select Cash
-                            on Delivery to place your order.
-                          </p>
-                        )}
                       </div>
                     </div>
 
@@ -1426,7 +1446,9 @@ function CheckoutContent({
                 {isPlacingOrder
                   ? "Placing Order..."
                   : stepper.current.id === "confirm"
-                    ? "Place Order"
+                    ? payment === "online"
+                      ? "Pay Online"
+                      : "Place Order"
                     : "Continue"}
 
                 {!isPlacingOrder && <FaArrowRight size={14} />}

@@ -22,7 +22,7 @@ const Navbar = () => {
     { name: "Categories", href: "/categories" },
     { name: "Brands", href: "/brands" },
     { name: "Cart", href: "/cart" },
-    { name: "Orders", href: "/orders" },
+    { name: "Orders", href: "/allorders" },
   ];
 
   return (

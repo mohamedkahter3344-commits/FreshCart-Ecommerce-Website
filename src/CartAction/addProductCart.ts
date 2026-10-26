@@ -7,6 +7,8 @@ export async function addProductToCartAction({ id }: { id: string }) {
   try {
     const token = await getMyToken();
 
+    console.log(token)
+
     if (!token) {
       return {
         status: "error",

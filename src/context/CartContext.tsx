@@ -10,6 +10,7 @@ import { updateProductCartAction } from "@/CartAction/updateProductCart";
 import { toast } from "@/components/ui/toast";
 import { Cart, CartProduct } from "@/interface/userCart.t";
 import { createCashPaymentAction } from "@/OrderAction/createCashPayment";
+import { createOnlinePaymentAction } from "@/OrderAction/createOnlinePayment";
 import { isAxiosError } from "axios";
 import React, {
   createContext,
@@ -31,6 +32,10 @@ type CartContextType = {
   phoneNumber: string,
   cityPlace: string,
   code: string,) => Promise<any>;
+  createOnlineProductOrder: (id: string,
+  address: string,
+  phoneNumber: string,
+  cityPlace: string,) => Promise<any>;
   getUserCart: () => Promise<void>;
   clearAllProductCart: () => Promise<any>;
   isLoading: boolean;
@@ -70,6 +75,10 @@ export const cartContext = createContext<CartContextType>({
     message: "Cart provider is unavailable",
   }),
   createProductOrder: async () => ({
+    status: "error",
+    message: "Cart provider is unavailable",
+  }),
+  createOnlineProductOrder: async () => ({
     status: "error",
     message: "Cart provider is unavailable",
   }),
@@ -237,6 +246,45 @@ const CartContextProvider = ({
       };
     }
   }
+  async function createOnlineProductOrder( id: string,
+  address: string,
+  phoneNumber: string,
+  cityPlace: string,) {
+    
+
+    try {
+      const result = await createOnlinePaymentAction(id,address,phoneNumber,cityPlace);
+
+      if (result?.status !== "success") {
+        toast.add({
+          type: "error",
+          description: result?.message || "Failed to Online payment",
+        });
+
+        return result;
+      }
+
+      await getUserCart();
+
+      toast.add({
+        type: "success",
+        description: result?.message || "Online Payment Successfully",
+      });
+
+      return result;
+    } catch (error) {
+
+      toast.add({
+        type: "error",
+        description: "Failed to Online Payment",
+      });
+
+      return {
+        status: "error",
+        message: "Failed to Online Payment",
+      };
+    }
+  }
   // apply Coupon Code (Logic)
   async function applyCouponCart(couponTitle: string) {
     
@@ -391,7 +439,8 @@ const CartContextProvider = ({
         applyCouponCart,
         isApplyingCoupon,
         createProductOrder,
-        cartId
+        cartId,
+        createOnlineProductOrder
       }}
     >
       {children}
