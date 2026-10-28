@@ -1,13 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product } from "@/interface/product.t";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CiHeart, CiStar } from "react-icons/ci";
-import { FaShoppingCart } from "react-icons/fa";
+import {  CiStar } from "react-icons/ci";
 import ButtonCard from "../ButtonCard/ButtonCard";
+import WishListButton from "../WishListButton/WishListButton";
 
 const ProductCard = ({ singleProduct }: { singleProduct: Product }) => {
   return (
@@ -19,13 +18,8 @@ const ProductCard = ({ singleProduct }: { singleProduct: Product }) => {
             Sale
           </Badge>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute right-4 top-4 z-10 rounded-full border-gray-200 bg-white text-gray-600 hover:bg-red-50 hover:text-red-500"
-          >
-            <CiHeart className="size-5" />
-          </Button>
+         {/*  */}
+         <WishListButton id={singleProduct._id}/>
 
           <Link href={`/productDetails/${singleProduct._id}`}>
             <Image

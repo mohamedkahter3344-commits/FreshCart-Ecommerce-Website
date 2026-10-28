@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
   FaShoppingBasket,
+  FaHeart,
   FaHome,
   FaThLarge,
   FaTags,
@@ -21,6 +22,7 @@ import {
 
 import Logo from "../../../assets/freshcart-logo.53f7a424c3aedc30a0fb46dc2278137c-_1_.png";
 import { cartContext } from "@/context/CartContext";
+import { wishListContext } from "@/context/WishListContext";
 
 const Navbar = () => {
   const { status } = useSession();
@@ -28,11 +30,22 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { numOfCarts } = useContext(cartContext);
 
+   const context = useContext(wishListContext);
+
+  if (!context) {
+    throw new Error(
+      "WishListButton must be used inside WishListContextProvider"
+    );
+  }
+
+  const { numOfWishList } = context;
+
   const links = [
     { name: "Home", href: "/", icon: FaHome },
     { name: "Categories", href: "/categories", icon: FaThLarge },
     { name: "Brands", href: "/brands", icon: FaTags },
     { name: "Orders", href: "/allorders", icon: FaClipboardList },
+    { name: "Wishlist", href: "/wishlist", icon: FaHeart },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -68,7 +81,11 @@ const Navbar = () => {
           <ul className="hidden items-center gap-1 xl:flex">
             {links.map(({ name, href, icon: Icon }) => (
               <li key={href}>
-                <Link href={href} className={linkClass(href)}>
+                <Link
+                  href={href}
+                  className={linkClass(href)}
+                  onClick={closeMenu}
+                >
                   <Icon size={15} />
                   <span>{name}</span>
                 </Link>
@@ -84,6 +101,7 @@ const Navbar = () => {
             <Link
               href="/cart"
               aria-label={`Shopping cart, ${numOfCarts} items`}
+              title="Shopping Cart"
               className={`relative flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 sm:h-12 sm:w-12 ${
                 isActive("/cart")
                   ? "border-green-200 bg-green-50 text-green-700"
@@ -100,7 +118,29 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Authentication Actions */}
+          {/* Wishlist */}
+          {status === "authenticated" && (
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              title="Wishlist"
+              className={`relative flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 sm:h-12 sm:w-12 ${
+                isActive("/wishlist")
+                  ? "border-pink-200 bg-pink-50 text-pink-600"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-pink-200 hover:bg-pink-50 hover:text-pink-600"
+              }`}
+            >
+              <FaHeart size={20} />
+
+               {numOfWishList > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-red-600 px-1 text-[10px] font-extrabold leading-none text-white">
+                  {numOfWishList > 99 ? "99+" : numOfWishList}
+                </span>
+              )}
+            </Link>
+          )}
+
+          {/* Login / Register */}
           {status === "unauthenticated" && (
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Link
@@ -126,6 +166,7 @@ const Navbar = () => {
             </div>
           )}
 
+          {/* Desktop Logout */}
           {status === "authenticated" && (
             <button
               type="button"
@@ -141,7 +182,7 @@ const Navbar = () => {
             </button>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Button */}
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
@@ -173,6 +214,21 @@ const Navbar = () => {
                     >
                       <Icon size={17} />
                       <span>{name}</span>
+
+                      {href === "/wishlist" && (
+                        <>
+                        
+                        
+                        <FaHeart
+                          size={14}
+                          className="ml-auto text-pink-500"
+                        />
+
+                         <span className="ml-auto rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-red-700">
+                      {numOfWishList}
+                    </span>
+                        </>
+                      )}
                     </Link>
                   </li>
                 ))}
@@ -185,6 +241,7 @@ const Navbar = () => {
                   >
                     <FaShoppingBasket size={17} />
                     <span>Shopping Cart</span>
+
                     <span className="ml-auto rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">
                       {numOfCarts}
                     </span>

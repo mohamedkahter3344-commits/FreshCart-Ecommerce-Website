@@ -2,11 +2,8 @@
 import Link from "next/link";
 import {
   FaBoxOpen,
-  FaHeadset,
-  FaShieldAlt,
   FaShoppingBag,
-  FaTruck,
-  FaUndo,
+  
 } from "react-icons/fa";
 
 import OrderCard from "@/app/_components/OrderCard/OrderCard";
@@ -14,29 +11,7 @@ import type { Order, OrdersType } from "@/interface/orders.t";
 import { getUserOrderAction } from "@/OrderAction/getUserOrders";
 import { getMyToken } from "@/utilities/mytoken";
 import { jwtDecode } from "jwt-decode";
-
-const features = [
-  {
-    icon: FaTruck,
-    title: "Free Shipping",
-    text: "On orders over 500 EGP",
-  },
-  {
-    icon: FaUndo,
-    title: "Easy Returns",
-    text: "14-day return policy",
-  },
-  {
-    icon: FaShieldAlt,
-    title: "Secure Payment",
-    text: "100% secure checkout",
-  },
-  {
-    icon: FaHeadset,
-    title: "24/7 Support",
-    text: "Contact us anytime",
-  },
-];
+import StoreBenefits from "@/app/_components/StoreBenefits/StoreBenefits";
 
 const AllOrders = async () => {
   const token = await getMyToken();
@@ -158,25 +133,7 @@ const AllOrders = async () => {
       )}
 
       {/* Features strip */}
-      <section className="mt-12 grid grid-cols-1 gap-5 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6 sm:grid-cols-2 lg:grid-cols-4">
-        {features.map(({ icon: Icon, title, text }) => (
-          <div key={title} className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-              <Icon size={20} />
-            </div>
-
-            <div>
-              <p className="text-base font-bold text-slate-800">
-                {title}
-              </p>
-
-              <p className="text-sm text-slate-500">
-                {text}
-              </p>
-            </div>
-          </div>
-        ))}
-      </section>
+     <StoreBenefits/>
     </main>
   );
 };

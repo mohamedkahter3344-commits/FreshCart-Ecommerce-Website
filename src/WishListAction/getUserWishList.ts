@@ -1,0 +1,23 @@
+"use server"
+import { getMyToken } from '@/utilities/mytoken';
+import axios from 'axios';
+export async function getUserWishListAction() {
+
+    const token = await getMyToken();
+
+    if (!token) {
+      return {
+        status: "error",
+        message: "Please log in first",
+      };
+    }
+    
+    const {data} = await axios.get("https://ecommerce.routemisr.com/api/v1/wishlist",{
+      headers:{
+        token:token as string
+      }
+    })
+
+
+    return data;
+}
