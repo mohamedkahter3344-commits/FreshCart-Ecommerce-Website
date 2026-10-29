@@ -49,9 +49,10 @@ const Gategories = ({ categories }: Props) => {
         className="!py-4"
       >
         {categories.map((category) => (
-          <Link href={`category/${category._id}`}>
+          
           
           <SwiperSlide key={category._id} className="h-auto cursor-pointer">
+              <Link href={`/category/${category._id}`}>
             <div className="group flex h-full min-w-0 flex-col items-center gap-3 overflow-hidden rounded-2xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
               <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-xl bg-green-50 dark:bg-gray-800">
                 <Image
@@ -62,13 +63,14 @@ const Gategories = ({ categories }: Props) => {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-
               <h3 className="line-clamp-2 min-h-10 w-full text-center text-sm font-bold text-gray-800 dark:text-gray-100">
                 {category.name}
               </h3>
+
             </div>
+              </Link>
           </SwiperSlide>
-          </Link>
+          
         ))}
       </Swiper>
     </div>
