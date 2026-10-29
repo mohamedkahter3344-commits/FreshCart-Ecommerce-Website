@@ -1,7 +1,7 @@
 import { getSingleProduct } from "@/apis/singleProduct";
 import { SingleProduct } from "@/interface/singleProduct.t";
-import {  CiStar } from "react-icons/ci";
-import {  FaShieldAlt, FaTruck } from "react-icons/fa";
+import { CiStar } from "react-icons/ci";
+import { FaShieldAlt, FaTruck } from "react-icons/fa";
 import Image from "next/image";
 import ButtonCard from "@/app/_components/ButtonCard/ButtonCard";
 import WishListButton from "@/app/_components/WishListButton/WishListButton";
@@ -21,20 +21,17 @@ const ProductDetails = async ({
       <div className="mx-auto w-[92%] max-w-7xl">
         {/* Breadcrumb */}
 
-<div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-  <Link
-    href="/"
-    className="transition-colors hover:text-green-600"
-  >
-    Home
-  </Link>
+        <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+          <Link href="/" className="transition-colors hover:text-green-600">
+            Home
+          </Link>
 
-  <span>/</span>
+          <span>/</span>
 
-  <span className="font-medium text-green-700 dark:text-green-400">
-    {singleProduct.category?.name ?? "General"}
-  </span>
-</div>
+          <span className="font-medium text-green-700 dark:text-green-400">
+            {singleProduct.category?.name ?? "General"}
+          </span>
+        </div>
 
         {/* Product Details Card */}
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -45,11 +42,11 @@ const ProductDetails = async ({
                 {singleProduct.category?.name ?? "General"}
               </span>
 
-             <WishListButton id={singleProduct._id}/>
+              <WishListButton id={singleProduct._id} />
 
               <Image
-              width={500}
-              height={500}
+                width={500}
+                height={500}
                 src={singleProduct.imageCover}
                 alt={singleProduct.title}
                 className="max-h-112.5 w-full object-contain transition-transform duration-500 hover:scale-105"
@@ -160,16 +157,12 @@ const ProductDetails = async ({
                 </span>
               </div>
 
-              
-            {/* Actions */}
-<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-  <ButtonCard id={singleProduct._id} />
+              {/* Actions */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <ButtonCard id={singleProduct._id} />
 
-  <WishListButton
-    id={singleProduct._id}
-    variant="action"
-  />
-</div>
+                <WishListButton id={singleProduct._id} variant="action" />
+              </div>
 
               {/* Benefits */}
               <div className="mt-8 grid grid-cols-1 gap-4 border-t border-gray-100 pt-6 sm:grid-cols-2 dark:border-gray-800">

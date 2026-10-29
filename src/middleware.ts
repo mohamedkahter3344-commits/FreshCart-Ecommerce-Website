@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
     // هنا بجيب صفحات الاوث
      const authPages = ["/login","/register"]
     // هنا بجيب كل الصغحات ما عدا الاوث
-   const routes = ["/", "/productDetails","/cart","/categories","/brands","/checkout","/allorders","/wishlist"]
+   const routes = ["/", "/productDetails","/cart","/categories","/brands","/checkout","/allorders","/wishlist","/profile","/change-password"]
     // هنا بقوله لو مفيش توكن واللي كتبه اليوز من ضمن الصفحات العاديه رجعه لصفحه اللوجن
    if (!token && routes.includes(pathname)) {
     return NextResponse.redirect(new URL('/login', request.url))
@@ -42,5 +42,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/", "/productDetails","/cart","/categories","/brands","/login","/register","/checkout","/allorders","/wishlist"],
+  matcher: ["/", "/productDetails","/cart","/categories","/brands","/login","/register","/checkout","/allorders","/wishlist","/profile","/change-password"],
 }

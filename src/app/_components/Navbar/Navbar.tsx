@@ -5,9 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useContext, useState } from "react";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { ThreeDots } from "react-loader-spinner";
+
 import {
-  FaShoppingBasket,
   FaHeart,
   FaHome,
   FaThLarge,
@@ -15,30 +16,35 @@ import {
   FaClipboardList,
   FaBars,
   FaTimes,
-  FaSignOutAlt,
   FaSignInAlt,
   FaUserPlus,
 } from "react-icons/fa";
 
+import { FaCartShopping } from "react-icons/fa6";
+
+
 import Logo from "../../../assets/freshcart-logo.53f7a424c3aedc30a0fb46dc2278137c-_1_.png";
+
 import { cartContext } from "@/context/CartContext";
 import { wishListContext } from "@/context/WishListContext";
+import { DropdownMenuNavbar } from "../DropdownNavbar/DropdownNavbar";
 
 const Navbar = () => {
   const { status } = useSession();
   const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
+
   const { numOfCarts } = useContext(cartContext);
+  const wishlistContext = useContext(wishListContext);
 
-   const context = useContext(wishListContext);
-
-  if (!context) {
+  if (!wishlistContext) {
     throw new Error(
-      "WishListButton must be used inside WishListContextProvider"
+      "Navbar must be used inside WishListContextProvider"
     );
   }
 
-  const { numOfWishList } = context;
+  const { numOfWishList } = wishlistContext;
 
   const links = [
     { name: "Home", href: "/", icon: FaHome },
@@ -108,7 +114,8 @@ const Navbar = () => {
                   : "border-slate-200 bg-white text-slate-700 hover:border-green-200 hover:bg-green-50 hover:text-green-700"
               }`}
             >
-              <FaShoppingBasket size={22} />
+              
+              <FaCartShopping size={22}/>
 
               {numOfCarts > 0 && (
                 <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-green-600 px-1 text-[10px] font-extrabold leading-none text-white">
@@ -132,7 +139,7 @@ const Navbar = () => {
             >
               <FaHeart size={20} />
 
-               {numOfWishList > 0 && (
+              {numOfWishList > 0 && (
                 <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-red-600 px-1 text-[10px] font-extrabold leading-none text-white">
                   {numOfWishList > 99 ? "99+" : numOfWishList}
                 </span>
@@ -166,20 +173,29 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Desktop Logout */}
-          {status === "authenticated" && (
-            <button
-              type="button"
-              onClick={() =>
-                signOut({
-                  callbackUrl: "/login",
-                })
-              }
-              className="hidden items-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:border-red-200 hover:bg-red-50 sm:flex lg:px-4"
+          {/* Loading Session */}
+          {status === "loading" && (
+            <div
+              className="flex h-11 items-center justify-center rounded-xl border border-green-100 bg-green-50 px-3 sm:h-12"
+              role="status"
+              aria-label="Loading account"
             >
-              <FaSignOutAlt size={15} />
-              <span>Log Out</span>
-            </button>
+              <ThreeDots
+                height={28}
+                width={40}
+                radius="9"
+                color="#16a34a"
+                ariaLabel="loading"
+                visible
+              />
+            </div>
+          )}
+
+          {/* Account Dropdown - Desktop */}
+          {status === "authenticated" && (
+            <div className="hidden sm:block">
+              <DropdownMenuNavbar />
+            </div>
           )}
 
           {/* Mobile Menu Button */}
@@ -215,56 +231,40 @@ const Navbar = () => {
                       <Icon size={17} />
                       <span>{name}</span>
 
-                      {href === "/wishlist" && (
-                        <>
-                        
-                        
-                        <FaHeart
-                          size={14}
-                          className="ml-auto text-pink-500"
-                        />
-
-                         <span className="ml-auto rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-red-700">
-                      {numOfWishList}
-                    </span>
-                        </>
+                      {href === "/wishlist" && numOfWishList > 0 && (
+                        <span className="ml-auto rounded-full bg-pink-100 px-2.5 py-1 text-xs font-bold text-pink-700">
+                          {numOfWishList > 99 ? "99+" : numOfWishList}
+                        </span>
                       )}
                     </Link>
                   </li>
                 ))}
 
+                {/* Shopping Cart */}
                 <li>
                   <Link
                     href="/cart"
                     onClick={closeMenu}
                     className={linkClass("/cart")}
                   >
-                    <FaShoppingBasket size={17} />
+                    <FaCartShopping size={22}/>
                     <span>Shopping Cart</span>
 
-                    <span className="ml-auto rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">
-                      {numOfCarts}
-                    </span>
+                    {numOfCarts > 0 && (
+                      <span className="ml-auto rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">
+                        {numOfCarts > 99 ? "99+" : numOfCarts}
+                      </span>
+                    )}
                   </Link>
                 </li>
-
-                <li className="pt-2 sm:hidden">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      signOut({
-                        callbackUrl: "/login",
-                      })
-                    }
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                  >
-                    <FaSignOutAlt size={16} />
-                    Log Out
-                  </button>
-                </li>
               </ul>
+
+              {/* Account Dropdown - Mobile */}
+              <div className="mt-3 border-t border-slate-100 pt-3">
+                <DropdownMenuNavbar />
+              </div>
             </>
-          ) : (
+          ) : status === "unauthenticated" ? (
             <div className="flex flex-col gap-1">
               <Link
                 href="/"
@@ -292,6 +292,21 @@ const Navbar = () => {
                 <FaUserPlus size={17} />
                 Register
               </Link>
+            </div>
+          ) : (
+            <div
+              className="flex items-center justify-center py-4"
+              role="status"
+              aria-label="Loading navigation"
+            >
+              <ThreeDots
+                height={35}
+                width={50}
+                radius="9"
+                color="#16a34a"
+                ariaLabel="loading-navigation"
+                visible
+              />
             </div>
           )}
         </div>
