@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginTypeSchema } from "@/schema/loginSchema";
 import { signIn } from "@/apis/SignIn";
+import Link from "next/link";
 
 const Login = () => {
   const router = useRouter();
@@ -85,6 +86,15 @@ const Login = () => {
             )}
           />
 
+          <div className="-mt-1 flex justify-end">
+  <Link
+    href="/forget-password"
+    className="text-sm font-semibold text-green-600 transition-colors duration-200 hover:text-green-700 hover:underline dark:text-green-400 dark:hover:text-green-300"
+  >
+    Forgot Password?
+  </Link>
+</div>
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -94,20 +104,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Footer
-        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Already have an account?
-          <a
-            href="/login"
-            className="font-bold text-green-600 transition hover:text-green-700"
-          >
-            Sign in
-          </a>
-        </p>
-
-        <p className="mt-6 text-center text-xs text-gray-400">
-          By creating an account, you agree to our Terms & Privacy Policy.
-        </p> */}
+        
       </div>
     </section>
   );
