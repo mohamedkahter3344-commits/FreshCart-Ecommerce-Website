@@ -14,9 +14,6 @@ const ProductCard = ({ singleProduct }: { singleProduct: Product }) => {
       <Card className="group relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white py-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 hover:cursor-pointer dark:bg-gray-950">
         {/* Product Image */}
         <div className="relative h-64 w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
-          <Badge className="absolute left-4 top-4 z-10 rounded-full bg-red-500 px-3 py-1 text-white hover:bg-red-600">
-            Sale
-          </Badge>
 
          {/*  */}
          <WishListButton id={singleProduct._id}/>
