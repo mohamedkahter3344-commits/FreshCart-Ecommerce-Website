@@ -140,8 +140,8 @@ const Footer = () => {
       <div className="border-t border-gray-700/60">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-6 py-6 text-center sm:flex-row sm:text-left">
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} FreshCart. All rights reserved.
-          </p>
+  © 2026 FreshCart. All rights reserved.
+</p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <span className="text-sm text-gray-400">We accept:</span>
