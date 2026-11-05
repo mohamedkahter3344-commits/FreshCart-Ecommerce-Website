@@ -8,6 +8,7 @@ import AOSProvider from "./_components/AosProvider/AosProvider";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toast";
 import Providers from './../Providers/Providers';
+import Footer from "./_components/Footer/Footer";
 
 
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Suspense>
           <Toaster />
           {children}
+          <Footer/>
         </Providers>
       </body>
     </html>
